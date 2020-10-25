@@ -14,7 +14,7 @@ jobs:
         name: Log Env Vars
         run: echo $EVENT_NAME
         env:
-          EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
+          EVENT_NAME: ${{ github.event_name }}
       -
         name: Get current date
         id: date
@@ -43,5 +43,5 @@ jobs:
           platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x
           push: true
           tags: |
-            ${{ env.GITHUB_REPOSITORY }}:edge
-            ${{ env.GITHUB_REPOSITORY }}:${{ steps.date.outputs.date }}
+            ${{ github.repository }}:edge
+            ${{ github.repository }}:${{ steps.date.outputs.date }}
