@@ -1,4 +1,4 @@
-name: '[builder] CI for releases'
+name: 'Docker Buildx'
 
 on:
     push:

@@ -12,7 +12,7 @@ var (
 	latency = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "route_hop_latency",
-			Help: "Latency to the indicated hop",
+			Help: "Latency to the indicated hop (in seconds)",
 		},
 		[]string{"target", "hop_number", "hop_name", "hop_address"},
 	)
@@ -20,15 +20,15 @@ var (
 	success = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "route_success",
-			Help: "Indicates whether the trace was successful (1 = success, 0 = failure, -1 = exporter error).",
+			Help: "Indicates whether the trace was successful (1 = success, 0 = failure, -1 = exporter error)",
 		},
 		[]string{"target"},
 	)
 
 	hops = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "route_hops",
-			Help: "Count of hops along route",
+			Name: "route_hop_count",
+			Help: "Number of hops taken along route",
 		},
 		[]string{"target"},
 	)
