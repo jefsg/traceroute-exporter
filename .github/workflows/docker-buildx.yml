@@ -23,10 +23,10 @@ jobs:
         uses: crazy-max/ghaction-docker-buildx@v1
         with:
           version: latest
-      - name: Build dockerfile (with push)
-        run: |
-          docker buildx build \
-          --platform=linux/amd64,linux/arm/v7,linux/arm64 \
-          --output "type=image,push=true" \
-          --file ./Dockerfile . \
-          --tag $(echo "${DOCKER_USERNAME}" | tr '[:upper:]' '[:lower:]')/traceroute-exporter:latest
+      # - name: Build dockerfile (with push)
+      #   run: |
+      #     docker buildx build \
+      #     --platform=linux/amd64,linux/arm/v7,linux/arm64 \
+      #     --output "type=image,push=true" \
+      #     --file ./Dockerfile . \
+      #     --tag $(echo "${DOCKER_USERNAME}" | tr '[:upper:]' '[:lower:]')/traceroute-exporter:latest
