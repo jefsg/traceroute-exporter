@@ -17,4 +17,5 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          docker --help
+          docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
+      
