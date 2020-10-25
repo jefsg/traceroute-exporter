@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -53,6 +54,14 @@ func parseHop(line string) (hop, error) {
 
 	if h.latency, err = strconv.ParseFloat(values[3], 64); err != nil {
 		return h, err
+	}
+
+	//scale latency based on units provided
+	if values[4] == "ms" {
+		h.latency = h.latency / 1000 // ms -> seconds
+	} else {
+		// TODO: Expand of the possibility of NS, Sec...
+		return h, errors.New("Error parsing latency. Unknown units from traceroute")
 	}
 
 	return h, nil
