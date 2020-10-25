@@ -42,4 +42,4 @@ jobs:
           push: true
           tags: |
             ${{ env.GITHUB_REPOSITORY }}:edge
-            ${{ env.GITHUB_REPOSITORY }:${{ steps.date.outputs.date }}
+            ${{ env.GITHUB_REPOSITORY }}:${{ steps.date.outputs.date }}
