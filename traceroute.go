@@ -18,21 +18,21 @@ type hop struct {
 func trace(host string) ([]hop, error) {
 	var hops []hop
 	// TODO: implement traceroute in pure go, rather than using exec
-	cmd := exec.Command("traceroute", "-q 1", host)
+	cmd := exec.Command("traceroute", "-q", "1", host)
 	// run command
-	if output, err := cmd.CombinedOutput(); err != nil {
-		log.WithFields(log.Fields{"error": err.Error()}).Error("Error running traceroute")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.WithFields(log.Fields{"error": err.Error(), "output": string(output)}).Error("Error running traceroute")
 		return nil, err
-	} else {
-		strOutput := strings.TrimSpace(string(output)) //trim to handle trailing \n
-		for _, line := range strings.Split(strOutput, "\n")[1:] {
-			if h, err := parseHop(line); err != nil {
-				log.WithFields(log.Fields{"error": err.Error()}).Error("Error parsing hop")
-				return hops, err
-			} else {
-				hops = append(hops, h)
-			}
+	}
+	strOutput := strings.TrimSpace(string(output)) //trim to handle trailing \n
+	for _, line := range strings.Split(strOutput, "\n")[1:] {
+		h, err := parseHop(line)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err.Error()}).Error("Error parsing hop")
+			return hops, err
 		}
+		hops = append(hops, h)
 	}
 	return hops, nil
 }
