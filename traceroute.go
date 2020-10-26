@@ -16,6 +16,8 @@ type hop struct {
 	latency float64
 }
 
+type tracer func(string) ([]hop, error)
+
 func trace(host string) ([]hop, error) {
 	var hops []hop
 	// TODO: implement traceroute in pure go, rather than using exec

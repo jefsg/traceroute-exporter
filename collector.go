@@ -41,38 +41,46 @@ func init() {
 	prometheus.MustRegister(hops)
 }
 
+func traceHandler(w http.ResponseWriter, r *http.Request, next http.Handler, tracerFunc tracer) {
+
+	target, ok := r.URL.Query()["target"]
+
+	if !ok || len(target[0]) < 1 {
+		errorMsg := "target not provided in url params"
+		log.Error(errorMsg)
+		// update success metric
+		success.With(prometheus.Labels{"target": ""}).Set(-1)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(errorMsg))
+	} else if result, err := tracerFunc(target[0]); err != nil {
+		errorMsg := "traceroute error"
+		log.WithFields(log.Fields{
+			"error": err.Error(),
+			"host":  target[0],
+		}).Error(errorMsg)
+		success.With(prometheus.Labels{"target": target[0]}).Set(0)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(errorMsg))
+	} else {
+		log.WithFields(log.Fields{
+			"host": target[0],
+		}).Debug("traceroute succeeded")
+		success.With(prometheus.Labels{"target": target[0]}).Set(1)
+		hops.With(prometheus.Labels{"target": target[0]}).Set(float64(len(result)))
+		for _, hop := range result {
+			latency.With(prometheus.Labels{
+				"target":      target[0],
+				"hop_number":  string(hop.number),
+				"hop_name":    hop.name,
+				"hop_address": hop.address,
+			}).Set(hop.latency)
+		}
+	}
+	next.ServeHTTP(w, r)
+}
+
 func traceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		target, ok := r.URL.Query()["target"]
-
-		if !ok || len(target[0]) < 1 {
-			log.Error("target not provided in url params")
-			// update success metric
-			success.With(prometheus.Labels{"target": ""}).Set(-1)
-		} else {
-			if result, err := trace(target[0]); err != nil {
-				log.WithFields(log.Fields{
-					"error": err.Error(),
-					"host":  target[0],
-				}).Error("traceroute error")
-				success.With(prometheus.Labels{"target": target[0]}).Set(0)
-			} else {
-				log.WithFields(log.Fields{
-					"host": target[0],
-				}).Debug("traceroute succeeded")
-				success.With(prometheus.Labels{"target": target[0]}).Set(1)
-				hops.With(prometheus.Labels{"target": target[0]}).Set(float64(len(result)))
-				for _, hop := range result {
-					latency.With(prometheus.Labels{
-						"target":      target[0],
-						"hop_number":  string(hop.number),
-						"hop_name":    hop.name,
-						"hop_address": hop.address,
-					}).Set(hop.latency)
-				}
-			}
-		}
-		next.ServeHTTP(w, r)
+		traceHandler(w, r, next, trace)
 	})
 }
