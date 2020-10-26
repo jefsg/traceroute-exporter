@@ -1,4 +1,4 @@
-package main
+package traceroute
 
 import (
 	"errors"
@@ -9,17 +9,17 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type hop struct {
-	number  string
-	name    string
-	address string
-	latency float64
+type Hop struct {
+	Number  string
+	Name    string
+	Address string
+	Latency float64
 }
 
-type tracer func(string) ([]hop, error)
+type Tracer func(string) ([]Hop, error)
 
-func trace(host string) ([]hop, error) {
-	var hops []hop
+func Trace(host string) ([]Hop, error) {
+	var hops []Hop
 	// TODO: implement traceroute in pure go, rather than using exec
 	cmd := exec.Command("traceroute", "-q", "1", host)
 	// run command
@@ -40,27 +40,27 @@ func trace(host string) ([]hop, error) {
 	return hops, nil
 }
 
-func parseHop(line string) (hop, error) {
-	var h hop
+func parseHop(line string) (Hop, error) {
+	var h Hop
 	var err error
 
 	values := strings.Fields(line)
-	h.number = values[0]
+	h.Number = values[0]
 
-	if h.name = values[1]; h.name == "*" {
+	if h.Name = values[1]; h.Name == "*" {
 		// no data for this hop, return
 		return h, nil
 	}
 
-	h.address = values[2]
+	h.Address = values[2]
 
-	if h.latency, err = strconv.ParseFloat(values[3], 64); err != nil {
+	if h.Latency, err = strconv.ParseFloat(values[3], 64); err != nil {
 		return h, err
 	}
 
 	//scale latency based on units provided
 	if values[4] == "ms" {
-		h.latency = h.latency / 1000 // ms -> seconds
+		h.Latency = h.Latency / 1000 // ms -> seconds
 	} else {
 		// TODO: Expand of the possibility of NS, Sec...
 		return h, errors.New("Error parsing latency. Unknown units from traceroute")

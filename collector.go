@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
-
+	traceroute "github.com/jefsg/traceroute-exporter/traceroute"
 	"github.com/prometheus/client_golang/prometheus"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -41,7 +41,7 @@ func init() {
 	prometheus.MustRegister(hops)
 }
 
-func traceHandler(w http.ResponseWriter, r *http.Request, next http.Handler, tracerFunc tracer) {
+func traceHandler(w http.ResponseWriter, r *http.Request, next http.Handler, tracerFunc traceroute.Tracer) {
 
 	target, ok := r.URL.Query()["target"]
 
@@ -70,10 +70,10 @@ func traceHandler(w http.ResponseWriter, r *http.Request, next http.Handler, tra
 		for _, hop := range result {
 			latency.With(prometheus.Labels{
 				"target":      target[0],
-				"hop_number":  string(hop.number),
-				"hop_name":    hop.name,
-				"hop_address": hop.address,
-			}).Set(hop.latency)
+				"hop_number":  string(hop.Number),
+				"hop_name":    hop.Name,
+				"hop_address": hop.Address,
+			}).Set(hop.Latency)
 		}
 	}
 	next.ServeHTTP(w, r)
@@ -81,6 +81,6 @@ func traceHandler(w http.ResponseWriter, r *http.Request, next http.Handler, tra
 
 func traceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		traceHandler(w, r, next, trace)
+		traceHandler(w, r, next, traceroute.Trace)
 	})
 }

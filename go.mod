@@ -1,4 +1,4 @@
-module traceroute-exporter
+module github.com/jefsg/traceroute-exporter
 
 go 1.15
 

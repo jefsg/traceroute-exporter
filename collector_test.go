@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	traceroute "github.com/jefsg/traceroute-exporter/traceroute"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -50,16 +51,16 @@ func fakeHTTPHandler() http.Handler {
 
 // fake tracer sends success response, unless host string contains the
 //  substring "fail"
-func fakeTracer(host string) ([]hop, error) {
+func fakeTracer(host string) ([]traceroute.Hop, error) {
 	if strings.Contains(host, "fail") {
-		return []hop{}, errors.New("Contrived tracer error for testing")
+		return []traceroute.Hop{}, errors.New("Contrived tracer error for testing")
 	}
-	return []hop{
-		hop{
-			number:  "1",
-			name:    "hostname",
-			address: "address",
-			latency: 10.01,
+	return []traceroute.Hop{
+		traceroute.Hop{
+			Number:  "1",
+			Name:    "hostname",
+			Address: "address",
+			Latency: 10.01,
 		},
 	}, nil
 }
