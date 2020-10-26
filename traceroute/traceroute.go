@@ -1,3 +1,4 @@
+// Package traceroute is a Go wrapper around the traceroute CLI utility
 package traceroute
 
 import (
@@ -9,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Hop describes information about a single host along a given traceroute.
 type Hop struct {
 	Number  string
 	Name    string
@@ -16,8 +18,14 @@ type Hop struct {
 	Latency float64
 }
 
+// Tracer provides acommon type for trace functions.
+// They should receive a hostname as a string for input, and return a slice of
+// Hops ([]Hop, error) that describe the hops along the route taken.
 type Tracer func(string) ([]Hop, error)
 
+// Trace is a Go wrapper around the CLI utility traceroute implementing Tracer.
+// Given a hostname or address as a string it will return a slice of Hops
+// describing the route taken to the remote host.
 func Trace(host string) ([]Hop, error) {
 	var hops []Hop
 	// TODO: implement traceroute in pure go, rather than using exec
