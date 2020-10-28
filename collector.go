@@ -51,7 +51,9 @@ func traceHandler(w http.ResponseWriter, r *http.Request, next http.Handler, tra
 		// update success metric
 		success.With(prometheus.Labels{"target": ""}).Set(-1)
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(errorMsg))
+		if _, err := w.Write([]byte(errorMsg)); err != nil {
+			log.Error(err.Error())
+		}
 	} else if result, err := tracerFunc(target[0]); err != nil {
 		errorMsg := "traceroute error"
 		log.WithFields(log.Fields{
@@ -60,7 +62,9 @@ func traceHandler(w http.ResponseWriter, r *http.Request, next http.Handler, tra
 		}).Error(errorMsg)
 		success.With(prometheus.Labels{"target": target[0]}).Set(0)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(errorMsg))
+		if _, err := w.Write([]byte(errorMsg)); err != nil {
+			log.Error(err.Error())
+		}
 	} else {
 		log.WithFields(log.Fields{
 			"host": target[0],

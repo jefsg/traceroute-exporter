@@ -45,7 +45,7 @@ func traceHandlerTestHelper(method string, path string) *http.Response {
 
 func fakeHTTPHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("success"))
+		w.Write([]byte("success")) //nolint
 	})
 }
 
@@ -53,7 +53,7 @@ func fakeHTTPHandler() http.Handler {
 //  substring "fail"
 func fakeTracer(host string) ([]traceroute.Hop, error) {
 	if strings.Contains(host, "fail") {
-		return []traceroute.Hop{}, errors.New("Contrived tracer error for testing")
+		return []traceroute.Hop{}, errors.New("contrived tracer error for testing")
 	}
 	return []traceroute.Hop{
 		traceroute.Hop{

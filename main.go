@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	port string = "9805"
+	port = "9805"
 )
 
 func init() {
