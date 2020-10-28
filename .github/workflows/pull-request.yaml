@@ -19,4 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run-test
-        run: go test ./...
+        run: go test ./... | tee > test-output
+      - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: test-output
+          path: test-output
