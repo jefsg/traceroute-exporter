@@ -16,7 +16,7 @@ func init() {
 }
 
 func hcHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusInternalServerError)
+	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte("healthy")); err != nil {
 		log.Error("error in path '/': " + err.Error())
 	}
