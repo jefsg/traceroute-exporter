@@ -43,6 +43,10 @@ func init() {
 
 func traceHandler(w http.ResponseWriter, r *http.Request, next http.Handler, tracerFunc traceroute.Tracer) {
 
+	log.WithFields(log.Fields{
+		"method": r.Method,
+	}).Debug(r.URL.String())
+
 	target, ok := r.URL.Query()["target"]
 
 	if !ok || len(target[0]) < 1 {

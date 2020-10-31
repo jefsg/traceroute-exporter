@@ -15,6 +15,8 @@
   ```
   scrape_configs:
   - job_name: 'traceroute'
+    scrape_interval: 60s
+    scrape_timeout: 60s
     static_configs:
       - targets:
         - example.com  # host or address to be passed to traceroute.
